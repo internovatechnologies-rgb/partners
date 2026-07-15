@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
+
+// nodemailer needs Node's net/tls — force the Node.js runtime (also the default).
+export const runtime = "nodejs";
 
 type Payload = {
   name?: string;
@@ -40,44 +44,61 @@ export async function POST(req: Request) {
     receivedAt: new Date().toISOString(),
   };
 
-  // Deliver via Resend if configured, otherwise log the submission (still 200).
-  // To receive submissions: set RESEND_API_KEY + PARTNER_INBOX (+ a verified
-  // sender domain) — or swap this block for your own webhook/CRM.
-  const apiKey = process.env.RESEND_API_KEY;
-  const inbox = process.env.PARTNER_INBOX;
-  const from = process.env.PARTNER_FROM ?? "Theraptly Partners <onboarding@resend.dev>";
+  // Deliver via Zoho Mail (SMTP). To receive submissions set:
+  //   ZOHO_SMTP_USER  — your Zoho mailbox, e.g. partners@yourdomain.com
+  //   ZOHO_SMTP_PASS  — an app-specific password (accounts.zoho.com → Security → App Passwords)
+  //   PARTNER_INBOX   — where applications land (defaults to ZOHO_SMTP_USER)
+  //   PARTNER_FROM    — optional From line (defaults to "Theraptly Partners <ZOHO_SMTP_USER>")
+  //   ZOHO_SMTP_HOST / ZOHO_SMTP_PORT — optional overrides (default smtp.zoho.com : 465)
+  const user = process.env.ZOHO_SMTP_USER;
+  const pass = process.env.ZOHO_SMTP_PASS;
 
-  if (apiKey && inbox) {
-    try {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from,
-          to: inbox,
-          reply_to: email,
-          subject: `New partner application — ${name}`,
-          text: [
-            `Name: ${record.name}`,
-            `Email: ${record.email}`,
-            `Consultancy/Company: ${record.company || "—"}`,
-            `Facilities in network: ${record.network || "—"}`,
-            "",
-            record.message || "(no message)",
-          ].join("\n"),
-        }),
-      });
-      if (!res.ok) {
-        console.error("[partner-application] email send failed", res.status);
-      }
-    } catch (err) {
-      console.error("[partner-application] email error", err);
-    }
-  } else {
-    console.log("[partner-application] new submission:", record);
+  // Not yet configured (e.g. before credentials are added): keep the site working
+  // by logging the submission and reporting success, so nothing is lost.
+  if (!user || !pass) {
+    console.warn(
+      "[partner-application] ZOHO_SMTP_USER/ZOHO_SMTP_PASS not set — logging submission instead of emailing:",
+      record,
+    );
+    return NextResponse.json({ ok: true });
+  }
+
+  const host = process.env.ZOHO_SMTP_HOST ?? "smtp.zoho.com";
+  const port = Number(process.env.ZOHO_SMTP_PORT ?? 465);
+  const from = process.env.PARTNER_FROM ?? `Theraptly Partners <${user}>`;
+  const inbox = process.env.PARTNER_INBOX ?? user;
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465, // 465 = implicit TLS; 587 uses STARTTLS
+    auth: { user, pass },
+  });
+
+  try {
+    await transporter.sendMail({
+      from,
+      to: inbox,
+      replyTo: `${record.name} <${record.email}>`,
+      subject: `New partner application — ${record.name}`,
+      text: [
+        `Name: ${record.name}`,
+        `Email: ${record.email}`,
+        `Consultancy/Company: ${record.company || "—"}`,
+        `Facilities in network: ${record.network || "—"}`,
+        `Received: ${record.receivedAt}`,
+        "",
+        record.message || "(no message)",
+      ].join("\n"),
+    });
+  } catch (err) {
+    // Configured but delivery failed — surface an error so the applicant can retry
+    // (the form shows its "please try again" message) rather than silently dropping it.
+    console.error("[partner-application] Zoho SMTP send failed:", err);
+    return NextResponse.json(
+      { ok: false, error: "Could not send your application. Please try again." },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({ ok: true });
