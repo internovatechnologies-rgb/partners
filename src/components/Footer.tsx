@@ -27,7 +27,7 @@ export function Footer() {
       >
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[16px] leading-relaxed text-[#1d1d1d]">
           <span>© 2026 Theraptly. All rights reserved.</span>
-          <Link href="/partners" className={`hover:text-brand ${focusRing}`}>
+          <Link href="/" className={`hover:text-brand ${focusRing}`}>
             Partner Program
           </Link>
           <Link href="/privacy" className={`hover:text-brand ${focusRing}`}>

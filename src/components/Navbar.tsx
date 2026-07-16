@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 
 const NAV_LINKS = [
-  { label: "Features", href: "/#features" },
-  { label: "Partners", href: "/partners" },
+  { label: "Features", href: "/home#features" },
+  { label: "Partners", href: "/" },
 ];
 
 const focusRing =
@@ -24,7 +24,7 @@ export default function Navbar() {
   // The partner hero is a dark full-bleed photo. While the bar sits over it
   // (top of that page, menu closed) it goes transparent with white content;
   // once scrolled or opened it falls back to the solid surface treatment.
-  const overDark = pathname === "/partners" && !scrolled && !open;
+  const overDark = pathname === "/" && !scrolled && !open;
   const linkColor = overDark
     ? "text-white hover:text-white/75"
     : "text-ink hover:text-brand";
