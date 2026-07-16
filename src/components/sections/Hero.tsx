@@ -21,7 +21,7 @@ export function Hero() {
       {/* Copy — staggered entrance (sits above the blob) */}
       <div className="relative z-20 mx-auto flex max-w-[900px] flex-col items-center gap-6 text-center lg:max-w-[1040px]">
         <div className="motion-safe:animate-fade-up">
-          <AnnouncementBanner badge="New" href="#whats-new">
+          <AnnouncementBanner badge="New" href="https://training.theraptly.com/">
             Theraptly LMS:
           </AnnouncementBanner>
         </div>
