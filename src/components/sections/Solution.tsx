@@ -121,7 +121,7 @@ export function Solution() {
       {/* CTAs */}
       <Reveal className="mt-12 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row">
         <Button
-          href="/sign-up"
+          href="https://training.theraptly.com/login"
           variant="dark"
           size="lg"
           shape="pill"
@@ -134,7 +134,7 @@ export function Solution() {
           Start for free
         </Button>
         <Button
-          href="/demo"
+          href="https://training.theraptly.com/request-demo"
           variant="soft"
           size="lg"
           shape="pill"

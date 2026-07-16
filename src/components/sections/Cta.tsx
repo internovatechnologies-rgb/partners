@@ -28,7 +28,7 @@ export function Cta() {
           </div>
 
           <Link
-            href="/demo"
+            href="https://training.theraptly.com/request-demo"
             className="rounded-full bg-white px-8 py-4 text-[clamp(1rem,1.2vw,1.28rem)] font-medium tracking-[-0.01em] text-black shadow-sm outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-brand"
           >
             Request a demo

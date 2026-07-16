@@ -5,12 +5,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
-import { Caret } from "@/components/ui/icons";
 
 const NAV_LINKS = [
   { label: "Features", href: "/#features" },
   { label: "Partners", href: "/partners" },
-  { label: "Blog", href: "/#blog", hasDropdown: true },
 ];
 
 const focusRing =
@@ -96,17 +94,17 @@ export default function Navbar() {
                   className={`flex items-center gap-2 rounded-md px-1 py-0.5 text-[15px] font-medium leading-[18px] transition-colors ${linkColor} ${focusRing}`}
                 >
                   {link.label}
-                  {link.hasDropdown && <Caret className="mt-px w-2 text-current" />}
                 </Link>
               </li>
             ))}
           </ul>
 
           <div className="flex items-center gap-2">
-            <Button href="/sign-in" variant="white" size="sm">
-              Sign in
-            </Button>
-            <Button href="/demo" variant="brand" size="sm">
+            <Button
+              href="https://training.theraptly.com/request-demo"
+              variant="brand"
+              size="sm"
+            >
               Request a Demo
             </Button>
           </div>
@@ -173,7 +171,6 @@ export default function Navbar() {
                 className={`flex items-center gap-2 rounded-lg px-3 py-3 text-[16px] font-medium text-ink transition-colors hover:bg-black/[0.04] ${focusRing}`}
               >
                 {link.label}
-                {link.hasDropdown && <Caret className="w-2 text-current" />}
               </Link>
             </li>
           ))}
@@ -181,16 +178,7 @@ export default function Navbar() {
 
         <div className="mt-4 flex flex-col gap-3 border-t border-black/[0.06] pt-4">
           <Button
-            href="/sign-in"
-            variant="white"
-            size="md"
-            fullWidth
-            onClick={() => setOpen(false)}
-          >
-            Sign in
-          </Button>
-          <Button
-            href="/demo"
+            href="https://training.theraptly.com/request-demo"
             variant="brand"
             size="md"
             fullWidth
